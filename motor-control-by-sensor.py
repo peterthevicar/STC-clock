@@ -42,7 +42,7 @@ step_count = len(motor_seq)
 # Set step_inc to 1 or 2. 1 gives half speed, high torque.
 # A 360° rotation takes 16*64=1024 single steps (16*8=512 double steps)
 # so for an increment of 1 you get wait_sec*1024 per rotation
-step_inc = 2
+step_inc = 1
  
 # Wait time between steps. Fastest possible is 0.002 seconds
 wait_sec = 0.01
@@ -69,7 +69,9 @@ def turn_steps(n_steps, cw=True):
 
         # Wait between steps
         time.sleep(wait_sec)
-
+    # Power off the stepper motor
+    GPIO.output(motor_pins, 0)
+    
 # Start main loop
 try:
     while True:
