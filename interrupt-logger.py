@@ -8,7 +8,7 @@ from logging.handlers import TimedRotatingFileHandler
 logger = logging.getLogger("Rotating Log")
 logger.setLevel(logging.INFO)
 # Set up log to rotate daily
-handler = TimedRotatingFileHandler("/home/pi/interrupts.log",
+handler = TimedRotatingFileHandler("/home/pi/Desktop/STC-clock/interrupts.log",
                                    when="d",
                                    interval=1,
                                    backupCount=0)
@@ -28,4 +28,4 @@ while True:
     logger.info(datetime.datetime.now())
     time.sleep(1) # anything less than 1 second is a bounce
     
-GPIO.cleanup()           # clean up GPIO on normal exit  
+GPIO.cleanp()           # clean up GPIO on normal exit  

@@ -1,0 +1,15 @@
+#!/bin/bash
+while read; do
+  #echo "     " $REPLY
+  exact=$(date -d "$REPLY" +%s)
+  ns=$(date -d "$REPLY" +%N)
+  ms=${ns::3}
+  round=$(date -d "@$((exact+29))" +"%Y-%m-%d %H:%M:00")
+  #echo "     .$round.$prev_round."
+  if [ "$round" != "$prev_round" ]; then
+    rounds=$(date -d "$round" +%s)
+    diff=$((exact*1000+ms - rounds*1000))
+    echo "${diff:0: -3}.${diff: -3}  $round"
+    prev_round="$round"
+  fi
+done <"interrupts.log"
