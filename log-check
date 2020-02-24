@@ -1,9 +1,10 @@
 #!/bin/bash
+logfile=${1:-"/home/pi/Desktop/STC-clock/interrupts.log"}
 while read; do
   #echo "     " $REPLY
   exact=$(date -d "$REPLY" +%s)
   ns=$(date -d "$REPLY" +%N)
-  ms=${ns::3}
+  ms=${ns::3}; ms=$(("10#$ms"))
   round=$(date -d "@$((exact+29))" +"%Y-%m-%d %H:%M:00")
   #echo "     .$round.$prev_round."
   if [ "$round" != "$prev_round" ]; then
@@ -12,4 +13,4 @@ while read; do
     echo "${diff:0: -3}.${diff: -3}  $round"
     prev_round="$round"
   fi
-done <"interrupts.log"
+done <"$logfile"
