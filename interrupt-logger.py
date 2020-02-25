@@ -8,7 +8,7 @@ from logging.handlers import TimedRotatingFileHandler
 logger = logging.getLogger("Rotating Log")
 logger.setLevel(logging.INFO)
 # Set up log to rotate daily
-handler = TimedRotatingFileHandler("/home/pi/Desktop/STC-clock/interrupts.log",
+handler = TimedRotatingFileHandler("/home/pi/Desktop/STC-clock/Data/interrupts.log",
                                    when="d",
                                    interval=1,
                                    backupCount=0)
