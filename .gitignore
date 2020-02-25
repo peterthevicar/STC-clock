@@ -1,3 +1,7 @@
+# data files from interrupt logger
+interrupts.log.*
+# Mega files
+.debris
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
