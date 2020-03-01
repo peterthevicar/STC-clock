@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # For testing in diffierent situations
-USING_GPIO=False
+USING_GPIO=True
 datadir="/home/pi/Desktop/STC-clock/Data/"
 logfile=datadir+"interrupts.log"
 setfile=datadir+"setting.txt"
