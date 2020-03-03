@@ -15,7 +15,7 @@ logger = logging.getLogger("Rotating Log")
 logger.setLevel(logging.INFO)
 # Set up log to rotate daily
 handler = TimedRotatingFileHandler(logfile,
-                                   when="d",
+                                   when="midnight",
                                    interval=1,
                                    backupCount=0)
 logger.addHandler(handler)
