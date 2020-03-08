@@ -37,6 +37,6 @@ while True:
     with open(setfile) as f:
         current_setting = f.readline().rstrip()
     logger.info(current_setting + " " + str(interrupt_time))
-    time.sleep(1) # anything less than 1 second is a bounce
+    time.sleep(60) # anything within 1 minute is chiming the same hour. Don't wait too long as there are occasional false triggers
     
 GPIO.cleanp()           # clean up GPIO on normal exit  
