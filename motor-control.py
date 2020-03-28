@@ -33,24 +33,38 @@ motor_seq = (
     (1,0,0,1)
     )
  
-step_count = len(motor_seq)
+STEP_COUNT = len(motor_seq)
 # Set step_inc to +/-1 or +/-2. 1 gives half speed, high torque.
 # Positive increment turns the shaft clockwise, negative anti-clockwise
 # The duration of a 360° rotation is wait_sec*(step_count/step_inc)*128
 # so for an increment of 1 you get wait_sec*1024 per rotation
-step_inc = int(input("increment (-2,-1,1,2): "))
- 
-# Read wait time from terminal
-wait_sec = float(input("Wait time (s): "))
- 
+STEP_INC = 1
+STEPS_PER_REV = STEP_COUNT/STEP_INC*128
+REVS_PER_UNIT = 2.5 # Number of turns of the motor to shif the weight by one unit on the pendulum scale
+WAIT_SEC = 0.01 # 0.005 is the fastest it can go reliably
+
+# Read what we're trying to achieve from the input
+inline = sys.sdin.readline()
+if inline[0] == "+":
+    direction = 1
+elif inline[0] == "-":
+    direction = -1
+else
+    raise "Invlaid input, should be +n or -n)"
+step_inc = STEP_INC * direction
+
+# Rest of input line is the number of units to move; translate into steps
+total_steps = int(inline[1:]) * STEPS_PER_REV * REVS_PER_UNIT
+
 # Initialise variables
 step_n = 0
  
-# Start main loop
+# Start moving
 try:
-    while True:
-      GPIO.output(motor_pins, motor_seq[step_n]) 
+    while steps_left > 0:
+      GPIO.output(motor_pins, motor_seq[step_n])
       step_n += step_inc
+      steps_left -= 1
      
       # loop at end of sequence
       if (step_n >= step_count):
@@ -59,7 +73,7 @@ try:
         step_n = step_count + step_inc
      
       # Wait between steps
-      time.sleep(wait_sec)
+      time.sleep(WAIT_SEC)
 
 finally:
     GPIO.output(motor_pins, False)

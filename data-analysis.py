@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 """
-Analyse the data from the intrrupt logger
+Analyse the data from the interrupt logger
 """
-LOG_NAME="/home/pi/Desktop/STC-clock/Data/interrupts.log"
-LOG_NAME="/Links/Peter/6-Resources/Church-equipment/Clock/RPi/Analysis/interrupts.log.2020-03-05"
+import sys # for stdin
 import datetime
 half_minute = datetime.timedelta(seconds=30)
 dt_nearest_min_prev = None
 err_data=[]
-# ~ with open(LOG_NAME) as f:
-import sys
+# Go through input a line at a time
 for inline in sys.stdin:
     s = inline.split()
     fine_adjust = s[0]
