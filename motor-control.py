@@ -2,22 +2,21 @@
 # Import required libraries
 import sys
 import time
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except:
+    import fake_gpio as GPIO
  
 # Use BCM GPIO references
 # instead of physical pin numbers
 GPIO.setmode(GPIO.BCM)
  
 # Define GPIO pins to use to drive the motor
-# In order    Bu, Pi, Y, O (same as motor driver board)
+# In order    Bu, Pi, Y, Or (same as motor driver board)
 motor_pins = (4, 14, 15, 18)
  
-# Set all pins as output
-# According to raspberry-gpio-python documentation at
-# https://sourceforge.net/p/raspberry-gpio-python/wiki/Outputs/
-# you can output to several channels at the same time
-# by passing 2 list parameters instead of 2 integers.
-GPIO.setup(motor_pins, GPIO.OUT)
+# Set all pins as output, set HIGH as the motor driver inverts the sense
+GPIO.setup(motor_pins, GPIO.OUT, initial=GPIO.HIGH)
 
 # Sequence of outputs to the motor_pins to turn the motor clockwise,
 # as shown in manufacturer's datasheet.
@@ -32,48 +31,50 @@ motor_seq = (
     (1,0,0,0),
     (1,0,0,1)
     )
- 
-STEP_COUNT = len(motor_seq)
-# Set step_inc to +/-1 or +/-2. 1 gives half speed, high torque.
-# Positive increment turns the shaft clockwise, negative anti-clockwise
-# The duration of a 360° rotation is wait_sec*(step_count/step_inc)*128
-# so for an increment of 1 you get wait_sec*1024 per rotation
-STEP_INC = 1
-STEPS_PER_REV = STEP_COUNT/STEP_INC*128
-REVS_PER_UNIT = 2.5 # Number of turns of the motor to shif the weight by one unit on the pendulum scale
-WAIT_SEC = 0.01 # 0.005 is the fastest it can go reliably
+STEPS_PER_SEQ = len(motor_seq)
+def one_seq(direction):
+    """
+    Go through one whole sequence, in either direction.
+    Don't stop mid-sequence as it makes re-starts unreliable
+    """
+    global STEPS_PER_SEQ
+    
+    # Always FINISH on step 0
+    step = 1 if direction == 1 else STEPS_PER_SEQ-1
+    for i in range(STEPS_PER_SEQ):
+        GPIO.output(motor_pins, motor_seq[step % STEPS_PER_SEQ])
+        step += direction
+         
+        # Wait between steps. 0.005 is the fastest it can go reliably
+        time.sleep(0.01)
 
-# Read what we're trying to achieve from the input
-inline = sys.sdin.readline()
-if inline[0] == "+":
-    direction = 1
-elif inline[0] == "-":
-    direction = -1
-else
-    raise "Invlaid input, should be +n or -n)"
-step_inc = STEP_INC * direction
+# 360° rotation requires 128 times through the sequence (1024 individual steps)
+# Adjust according to size of scale: 
+#   number of sequences of the motor needed to shift the weight by 
+#   one (minor) tick on the pendulum scale
+SEQS_PER_TICK = 32
 
-# Rest of input line is the number of units to move; translate into steps
-total_steps = int(inline[1:]) * STEPS_PER_REV * REVS_PER_UNIT
-
-# Initialise variables
-step_n = 0
- 
-# Start moving
 try:
-    while steps_left > 0:
-      GPIO.output(motor_pins, motor_seq[step_n])
-      step_n += step_inc
-      steps_left -= 1
-     
-      # loop at end of sequence
-      if (step_n >= step_count):
-        step_n = 0
-      elif (step_n < 0):
-        step_n = step_count + step_inc
-     
-      # Wait between steps
-      time.sleep(WAIT_SEC)
+    # Read what we're trying to achieve from the input, format is <+|-><number of ticks>
+    inline = sys.stdin.readline()
+
+    # First the direction: positive increment turns the motor shaft clockwise.
+    # Motor is at the top of the screw so screw goes anti-clockwise and the 
+    # weight goes down the bob towards 10
+    if inline[0] == "+":
+        direction = 1
+    elif inline[0] == "-":
+        direction = -1
+    else:
+        raise "Invalid input, should be <+|-><nticks>"
+
+    # Rest of input line is the number of ticks to move; translate into seqs
+    nseqs = int(inline[1:]) * SEQS_PER_TICK
+    
+    # Do the move
+    for i in range(nseqs):
+        one_seq(direction)
 
 finally:
-    GPIO.output(motor_pins, False)
+    # Important to switch off the magnets to avoid over-heating
+    GPIO.cleanup()
