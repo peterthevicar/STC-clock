@@ -49,10 +49,12 @@ def one_seq(direction):
         time.sleep(0.01)
 
 # 360° rotation requires 128 times through the sequence (1024 individual steps)
-# Adjust according to size of scale: 
+# Adjust SEQS_PER_TICK according to size of scale: 
 #   number of sequences of the motor needed to shift the weight by 
 #   one (minor) tick on the pendulum scale
-SEQS_PER_TICK = 32
+#   32 was slightly too big: 50 went from 10.4 to 5.3 => should be 31.4
+# Need to stick with a whole number
+SEQS_PER_TICK = 31
 
 try:
     # Read what we're trying to achieve from the input, format is <+|-><number of ticks>
@@ -70,6 +72,9 @@ try:
 
     # Rest of input line is the number of ticks to move; translate into seqs
     nseqs = int(inline[1:]) * SEQS_PER_TICK
+    # Sanity check
+    if nseqs > 100 or nseqs < -100:
+        raise "Invalid input: nticks must be 100>=nticks>=-100"
     
     # Do the move
     for i in range(nseqs):
