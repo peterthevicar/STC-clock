@@ -73,7 +73,7 @@ try:
     # Rest of input line is the number of ticks to move; translate into seqs
     nseqs = int(inline[1:]) * SEQS_PER_TICK
     # Sanity check
-    if nseqs > 100 or nseqs < -100:
+    if nseqs > 1000 or nseqs < -1000:
         raise "Invalid input: nticks must be 100>=nticks>=-100"
     
     # Do the move

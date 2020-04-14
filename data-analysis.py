@@ -39,7 +39,7 @@ for inline in sys.stdin:
         dt_nearest_min_prev = dt_nearest_min
 # ~ print(err_data) # DEBUG
 # Calculate average, omitting top and bottom extreme values as outliers
-outlier_percent=20
+outlier_percent=5
 out_start = int(len(err_data)*outlier_percent/100)
 out_end = -out_start if out_start > 0 else None
 sum_fa = 0
