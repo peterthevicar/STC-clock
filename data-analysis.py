@@ -39,7 +39,7 @@ for inline in sys.stdin:
         dt_nearest_min_prev = dt_nearest_min
 # ~ print(err_data) # DEBUG
 # Calculate average, omitting top and bottom extreme values as outliers
-outlier_percent=5
+outlier_percent=0
 out_start = int(len(err_data)*outlier_percent/100)
 out_end = -out_start if out_start > 0 else None
 sum_fa = 0
@@ -58,7 +58,7 @@ for dt_secs, dt_nearest_min, err, fine_adjust in sorted_data:
 avg_fa = sum_fa / n_err
 avg_err = sum_err / n_err
 avg_dt_secs = sum_dt / n_err
-print("Data points:",n_err, ", Outliers discarded:",out_start*2)
+print("Data points (including outliers): "+str(len(err_data))+", Outliers "+"("+str(outlier_percent)+"% top and bottom) discarded:",out_start*2)
 print("  Average fine adjust:","{:.3f}".format(avg_fa))
 print("  Average error:","{:.3f}".format(avg_err))
 print("  Maximum error:","{:.3f}".format(max_err),"= average error +","{:.3f}".format(max_err-avg_err))
@@ -67,7 +67,6 @@ print("  Spread of values (max-min):", "{:.3f}".format(max_err - min_err))
 # Now we know the average we can calculare the least-square slope
 # Can't fit the curve with half hours included; the numbers are too jittery
 if not ACCEPT_HALF:
-    print("Fit line to data points using least square")
     # ~ print("avg_dt_secs:", avg_dt_secs)
     sum_xy = 0; sum_x_sq = 0
     for dt_secs, dt_nearest_min, err, fine_adjust in sorted_data:
@@ -76,6 +75,6 @@ if not ACCEPT_HALF:
     slope = sum_xy/sum_x_sq
     # convert from seconds per second to seconds per day
     slope = slope*60*60*24
-    print("  Best fit error trend (seconds/day, positive means clock getting slower):", "{:.3f}".format(slope))
+    print("  Least squares trend (seconds/day, positive means clock getting slower):", "{:.3f}".format(slope))
 else:
     print("Not fitting line to data points because half hours are included")

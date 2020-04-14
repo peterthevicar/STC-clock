@@ -71,10 +71,11 @@ try:
         raise "Invalid input, should be <+|-><nticks>"
 
     # Rest of input line is the number of ticks to move; translate into seqs
-    nseqs = int(inline[1:]) * SEQS_PER_TICK
+    nticks = int(inline[1:])
     # Sanity check
-    if nseqs > 1000 or nseqs < -1000:
+    if nticks > 100 or nticks < -100:
         raise "Invalid input: nticks must be 100>=nticks>=-100"
+    nseqs = nticks * SEQS_PER_TICK
     
     # Do the move
     for i in range(nseqs):
