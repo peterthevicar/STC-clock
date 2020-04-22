@@ -7,6 +7,11 @@ Just to record the fact somewhere: when re-adjusting the COARSE adjustment
 2 seconds per day difference to the timing of the clock.
 I had to adjust it down (slower) by 10 ticks to compensate for the fine adjust mechanism.
 """
+import argparse # allow command line optioni to specify discarded outliers %
+parser=argparse.ArgumentParser()
+parser.add_argument("-d", "--discard", help="percent of outliers to discard (top and bottom)", type=int, default=0)
+args=parser.parse_args()
+
 import sys # for stdin
 import datetime
 half_minute = datetime.timedelta(seconds=30)
@@ -39,7 +44,7 @@ for inline in sys.stdin:
         dt_nearest_min_prev = dt_nearest_min
 # ~ print(err_data) # DEBUG
 # Calculate average, omitting top and bottom extreme values as outliers
-outlier_percent=0
+outlier_percent=args.discard
 out_start = int(len(err_data)*outlier_percent/100)
 out_end = -out_start if out_start > 0 else None
 sum_fa = 0
