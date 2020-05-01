@@ -40,4 +40,4 @@ while True:
     logger.info(current_setting + " " + str(interrupt_time))
     time.sleep(60) # anything within 1 minute is chiming the same hour. Don't wait too long as there are occasional false triggers
     
-GPIO.cleanp()           # clean up GPIO on normal exit  
+GPIO.cleanup()           # clean up GPIO on normal exit  

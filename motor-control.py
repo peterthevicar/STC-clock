@@ -1,4 +1,14 @@
 #!/usr/bin/python
+"""
+Send the right signals to the stepper motor to move the fine adjustment weight
+Always finish by moving the weight UP a little to overcome hysteresis
+Keep settings.txt up to date with the current position of the weight
+Check the weight doesn't move too far in either direction
+"""
+# File where the current position of the weight is recorded
+datadir="/home/pi/Desktop/STC-clock/Data/"
+setfile=datadir+"setting.txt"
+
 # Import required libraries
 import sys
 import time
@@ -72,14 +82,25 @@ try:
 
     # Rest of input line is the number of ticks to move; translate into seqs
     nticks = int(inline[1:])
-    # Sanity check
-    if nticks > 100 or nticks < -100:
-        raise "Invalid input: nticks must be 100>=nticks>=-100"
-    nseqs = nticks * SEQS_PER_TICK
+
+    # Boundary check, mustn't go outside 1.0 - 10.9
+    with open(setfile, "r") as f:
+        current_setting = float(f.read())
+        if direction == -1:
+            nticks = min(nticks, int((current_setting - 1.0) * 10))
+        else:
+            nticks = min(nticks, int((10.9 - current_setting) * 10))
     
-    # Do the move
-    for i in range(nseqs):
-        one_seq(direction)
+    # Do the move, keeping the settings file updated every tick
+    print("Moving "+str(nticks)+" ticks from "+str(current_setting))
+    for t in range (nticks):
+        for i in range(SEQS_PER_TICK):
+            one_seq(direction)
+        current_setting += direction * 0.1
+        with open(setfile, "r+") as f:
+            f.write("{:.1f}".format(current_setting))
+            f.truncate()
+        print("{:.1f}".format(current_setting))
 
 finally:
     # Important to switch off the magnets to avoid over-heating

@@ -1,3 +1,4 @@
+_PRINT_OUTPUT=False
 BCM = "BCM"
 OUT = "OUT"
 IN = "IN"
@@ -5,7 +6,7 @@ HIGH = True
 LOW = False
 
 def output(pins, value):
-  print("GPIO.output:", pins, value)
+    if _PRINT_OUTPUT: print("GPIO.output:", pins, value)
 
 def setmode(value):
     print("GPIO.setmode:", value)
