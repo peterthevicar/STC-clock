@@ -8,16 +8,19 @@ setfile=datadir+"setting.txt"
 
 # Set up rotating log file
 import logging
-import time
 from logging.handlers import TimedRotatingFileHandler
+import datetime
+import time
 
 logger = logging.getLogger("Rotating Log")
 logger.setLevel(logging.INFO)
 # Set up log to rotate daily
+# End the day at 23.45 so midnight starts the next log
 handler = TimedRotatingFileHandler(logfile,
                                    when="midnight",
+                                   atTime=datetime.time(23,45),
                                    interval=1,
-                                   backupCount=0)
+                                   backupCount=400)
 logger.addHandler(handler)
 
 # Set up interrupt handler
@@ -29,8 +32,6 @@ if USING_GPIO:
     # GPIO set up as input. It is pulled up to stop false signals
     GPIO.setup(interrupt_pin, GPIO.IN) # pin 2 has pull up already, pull_up_down=GPIO.PUD_UP)  
 
-import datetime
-    
 while True:
     if USING_GPIO: GPIO.wait_for_edge(interrupt_pin, GPIO.FALLING)
     interrupt_time = datetime.datetime.now()

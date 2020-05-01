@@ -1,0 +1,7 @@
+#!/bin/bash
+for l in Data/interrupts.log*; do
+  echo $l
+  cat $l | python3 data-analysis.py $*
+  echo ""
+done
+  
