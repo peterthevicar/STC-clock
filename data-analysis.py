@@ -63,14 +63,9 @@ for dt_secs, dt_nearest_min, err, fine_adjust in sorted_data:
 avg_fa = sum_fa / n_err
 avg_err = sum_err / n_err
 avg_dt_secs = sum_dt / n_err
-print("Data points (including outliers): "+str(len(err_data))+", Outliers "+"("+str(outlier_percent)+"% top and bottom) discarded:",out_start*2)
-print("  Average fine adjust:","{:.3f}".format(avg_fa))
-print("  Average error:","{:.3f}".format(avg_err))
-print("  Maximum error:","{:.3f}".format(max_err),"= average error +","{:.3f}".format(max_err-avg_err))
-print("  Minimum error:","{:.3f}".format(min_err),"= average error -","{:.3f}".format(avg_err-min_err))
-print("  Spread of values (max-min):", "{:.3f}".format(max_err - min_err))
-# Now we know the average we can calculare the least-square slope
+# Now we know the average we can calculate the least-square slope
 # Can't fit the curve with half hours included; the numbers are too jittery
+print("ERROR", "{:.3f}".format(avg_err), "(Average Error, positive means clock is slow)")
 if not ACCEPT_HALF:
     # ~ print("avg_dt_secs:", avg_dt_secs)
     sum_xy = 0; sum_x_sq = 0
@@ -80,6 +75,11 @@ if not ACCEPT_HALF:
     slope = sum_xy/sum_x_sq
     # convert from seconds per second to seconds per day
     slope = slope*60*60*24
-    print("  Least squares trend (seconds/day, positive means clock getting slower):", "{:.3f}".format(slope))
+    print("TREND", "{:.3f}".format(slope), "(Least squares trend, seconds/day, positive means clock getting slower)")
 else:
-    print("Not fitting line to data points because half hours are included")
+    print("TREND - (Not fitting line to data points because half hours are included)")
+print("FINEA","{:.2f}".format(avg_fa),"(Average fine adjust setting)")
+print("  Maximum error:","{:.3f}".format(max_err),"= average error +","{:.3f}".format(max_err-avg_err))
+print("  Minimum error:","{:.3f}".format(min_err),"= average error -","{:.3f}".format(avg_err-min_err))
+print("  Spread of values (max-min):", "{:.3f}".format(max_err - min_err))
+print("  Data points (including outliers): "+str(len(err_data))+", Outliers "+"("+str(outlier_percent)+"% top and bottom) discarded:",out_start*2)
