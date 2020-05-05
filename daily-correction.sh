@@ -12,7 +12,7 @@
 #~ o       Else do nothing
 #~ o       Endif
 function avg_error {
-    echo "$(python3 data-analysis.py < $1 | grep ERROR | sed "s/ERROR \([0-9.-]*\).*/\1/")"
+    echo "$(python3 data-analysis.py -d5 < $1 | grep ERROR | sed "s/ERROR \([0-9.-]*\).*/\1/")"
 }
 LOGF="Data/interrupts.log"
 #Find error from yesterday - there's a strangeness in Python's log file naming that means the name is from 2 days ago
