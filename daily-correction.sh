@@ -15,6 +15,7 @@
 
 # Output current date and time for the log
 date
+cd /home/pi/Desktop/STC-clock
 
 # these variables are in tenths and ticks
 FAE="-5"
