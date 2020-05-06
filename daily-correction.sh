@@ -13,6 +13,9 @@
 #~ o       Else do nothing
 #~ o       Endif
 
+# Output current date and time for the log
+date
+
 # these variables are in tenths and ticks
 FAE="-5"
 SAE="5"
