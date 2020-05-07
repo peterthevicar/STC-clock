@@ -51,19 +51,21 @@ out_end = -out_start if out_start > 0 else None
 sum_fa = 0
 sum_err = 0; n_err = 0; max_err = -100; min_err = 100
 sum_dt = 0
-sorted_data=sorted(err_data, key=lambda err_data: err_data[1])[out_start:out_end]
+sorted_data=sorted(err_data, key=lambda err_data: err_data[2])[out_start:out_end]
+med_err = sorted_data[len(sorted_data)//2][2]
+print("ERROR", "{:.3f}".format(med_err), "(Median Error, positive means clock is slow)")
 # ~ print (sorted(sorted_data)) # DEBUG
-for dt_secs, dt_nearest_min, err, fine_adjust in sorted_data:
-    sum_fa += fine_adjust
-    if err > max_err: max_err=err
-    if err < min_err: min_err=err
-    sum_err += err
-    sum_dt += dt_secs
-    n_err += 1
-    # ~ print(dt_secs, err)
-avg_err = sum_err / n_err
-print("ERROR", "{:.3f}".format(avg_err), "(Average Error, positive means clock is slow)")
 if args.full: # full analysis requested
+    for dt_secs, dt_nearest_min, err, fine_adjust in sorted_data:
+        sum_fa += fine_adjust
+        if err > max_err: max_err=err
+        if err < min_err: min_err=err
+        sum_err += err
+        sum_dt += dt_secs
+        n_err += 1
+        # ~ print(dt_secs, err)
+    avg_err = sum_err / n_err
+    print("AVGER", "{:.3f}".format(avg_err), "(Average Error, positive means clock is slow)")
     # Now we know the average we can calculate the least-square slope
     avg_fa = sum_fa / n_err
     avg_dt_secs = sum_dt / n_err
