@@ -1,6 +1,6 @@
 # data files from interrupt logger
-interrupts.log
-interrupts.log.*
+*.log
+*.log.*
 # Mega files
 .debris
 # Byte-compiled / optimized / DLL files

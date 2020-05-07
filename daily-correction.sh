@@ -18,11 +18,11 @@ date
 cd /home/pi/Desktop/STC-clock
 
 # these variables are in tenths and ticks
-FAE="-5"
-SAE="5"
-WPI="2"
-echo "Maximum fast = $FAE, Maximum slow = $SAE"
-function avg_error {
+FAE="-0"
+SAE="0"
+WPI="1"
+#~ echo "Maximum fast = $FAE, Maximum slow = $SAE"
+function med_error {
     dec_n="$(python3 data-analysis.py -d5 < $1 | grep ERROR | sed 's/ERROR \([0-9.-]*\).*/\1/')"
     # multiply by 10 and round to get error in tenths of seconds
     awk '{printf "%.0f", $1*10}' <<< "$dec_n"
@@ -30,14 +30,19 @@ function avg_error {
 LOGF="Data/interrupts.log"
 #Find error from yesterday - there's a strangeness in Python's log file naming that means the name is from 2 days ago
 LOGF0="$LOGF.$(date -d "2 days ago" -Idate)"
-ERRY=$(avg_error $LOGF0)
+ERRY=$(med_error $LOGF0)
 #Error from today
-ERRT=$(avg_error $LOGF)
+ERRT=$(med_error $LOGF)
 DRIFT=$((ERRT - ERRY))
-echo "Yesterday=$ERRY, Today=$ERRT, DRIFT=$DRIFT"
+echo "ERROR=$ERRT, Yesterday ERROR=$ERRY, DRIFT=$DRIFT"
+echo -n "FAE=$FAE, SAE=$SAE, FADJ=$(cat Data/setting.txt), Adjust: "
 
-if [ $ERRT -gt $SAE -o $ERRT -lt $FAE ]; then
-    echo "Adjust FA weight by $WPI ticks"
+if [ $ERRT -gt $SAE ]; then
+    echo "-$WPI ticks"
+    echo "-$WPI" | python3 motor-control.py
+elif [ $ERRT -lt $FAE ]; then
+    echo "+$WPI ticks"
+    echo "+$WPI" | python3 motor-control.py
 else
-    echo "No adjustment needed"
+    echo "None"
 fi
