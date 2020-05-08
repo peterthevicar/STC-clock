@@ -3,7 +3,7 @@
 cd /home/pi/Desktop/STC-clock
 {
 	cat msmtp-headers.txt
-	tail -n3 Data/daily-correction.log
+	cat Data/daily-correction.log | awk -v RS='---\n' 'END { print $0 }'
 	echo ""
 	python3 data-analysis.py -f -d10 <Data/interrupts.log
 	echo ""

@@ -14,6 +14,7 @@
 #~ o       Endif
 
 # Output current date and time for the log
+echo "---"
 date
 cd /home/pi/Desktop/STC-clock
 
