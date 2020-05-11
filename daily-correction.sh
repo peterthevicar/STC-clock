@@ -18,10 +18,10 @@ echo "---"
 date
 cd /home/pi/Desktop/STC-clock
 
-# these variables are in tenths and ticks
-FAE="-0"
-SAE="0"
-WPI="1"
+#~ # these variables are in tenths and ticks
+#~ FAE="-0"
+#~ SAE="0"
+#~ WPI="1"
 #~ echo "Maximum fast = $FAE, Maximum slow = $SAE"
 function med_error {
     dec_n="$(python3 data-analysis.py -d5 < $1 | grep ERROR | sed 's/ERROR \([0-9.-]*\).*/\1/')"
@@ -34,16 +34,21 @@ LOGF0="$LOGF.$(date -d "2 days ago" -Idate)"
 ERRY=$(med_error $LOGF0)
 #Error from today
 ERRT=$(med_error $LOGF)
+#~ ERRT="-1" # for debugging
 DRIFT=$((ERRT - ERRY))
-echo "ERROR=$ERRT, Yesterday ERROR=$ERRY, DRIFT=$DRIFT"
-echo -n "FAE=$FAE, SAE=$SAE, FADJ=$(cat Data/setting.txt), Adjust: "
-
-if [ $ERRT -gt $SAE ]; then
-    echo "-$WPI ticks"
-    echo "-$WPI" | python3 motor-control.py
-elif [ $ERRT -lt $FAE ]; then
-    echo "+$WPI ticks"
-    echo "+$WPI" | python3 motor-control.py
-else
-    echo "None"
+echo -n "ERROR=$ERRT, Yesterday ERROR=$ERRY, DRIFT=$DRIFT"
+#~ echo -n "FAE=$FAE, SAE=$SAE, FADJ=$(cat Data/setting.txt), Adjust: "
+ADJ=$(awk '{printf "%+.0f", -$1-$2}' <<< "$ERRT $DRIFT")
+echo ", FADJ=$(cat Data/setting.txt), Adjust: $ADJ"
+if [ "$ADJ" -ne "+0" ]; then
+  echo $ADJ | python3 motor-control.py
 fi
+#~ if [ $ERRT -gt $SAE ]; then
+    #~ echo "-$WPI ticks"
+    #~ echo "-$WPI" | python3 motor-control.py
+#~ elif [ $ERRT -lt $FAE ]; then
+    #~ echo "+$WPI ticks"
+    #~ echo "+$WPI" | python3 motor-control.py
+#~ else
+    #~ echo "None"
+#~ fi
