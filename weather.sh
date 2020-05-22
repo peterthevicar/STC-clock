@@ -10,5 +10,5 @@ JQFILTER="
 \",Humi,\", ([.hourly[].humidity | tonumber] | add/8),
 \"\n\""
 curl -s wttr.in/Lymington?format=j1 | 
-  jq -j "$JQFILTER" >>Data/weather.txt
+  jq -j "$JQFILTER"
 
