@@ -52,8 +52,8 @@ sum_fa = 0
 sum_err = 0; n_err = 0; max_err = -100; min_err = 100
 sum_dt = 0
 sorted_data=sorted(err_data, key=lambda err_data: err_data[2])[out_start:out_end]
-med_err = sorted_data[len(sorted_data)//2][2]
-print("ERROR", "{:.3f}".format(med_err), "(Median Error, positive means clock is slow)")
+med_min, med_err = sorted_data[len(sorted_data)//2][1:3]
+print("ERROR", "{:.3f}".format(med_err), "(Median Error at",med_min,", positive means clock is slow)")
 # ~ print (sorted(sorted_data)) # DEBUG
 if args.full: # full analysis requested
     for dt_secs, dt_nearest_min, err, fine_adjust in sorted_data:

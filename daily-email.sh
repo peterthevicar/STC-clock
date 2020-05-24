@@ -2,12 +2,13 @@
 # Send email with summary of clock stats
 cd /home/pi/Desktop/STC-clock
 {
-	cat msmtp-headers.txt
+	echo "To: linuxiseasier@gmail.com, nigel.sethsmith@gmail.com"
+    echo "From: lymingtonclock@gmail.com"
+    echo "Subject: Update from Lymington Clock"
 	echo "Error, drift and correction"
 	cat Data/daily-correction.log | awk -v RS='---\n' 'END { print $0 }'
-	echo ""
 	echo "Online weather forecast for today and tomorrow"
-	tail -n2 Data/weather.txt
+	tail -n2 Data/weather.log
 	echo ""
 	echo "Today's log analysis"
 	python3 data-analysis.py -f -d0 <Data/interrupts.log
