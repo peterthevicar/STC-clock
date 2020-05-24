@@ -15,4 +15,4 @@ cd /home/pi/Desktop/STC-clock
 	echo ""
 	echo "Today's raw data"
 	cat Data/interrupts.log
-} | msmtp "$(grep To msmtp-headers.txt | sed "s/To: //")"
+} | msmtp --read-recipients
