@@ -6,6 +6,9 @@ datadir="/home/pi/Desktop/STC-clock/Data/"
 logfile=datadir+"interrupts.log"
 setfile=datadir+"setting.txt"
 
+# Each temperature sensor has a different address so if you change the sensor change this
+temp_sensor="/sys/bus/w1/devices/28-00181100004b/w1_slave"
+
 # Set up rotating log file
 import logging
 from logging.handlers import TimedRotatingFileHandler
@@ -37,7 +40,13 @@ while True:
     interrupt_time = datetime.datetime.now()
     with open(setfile) as f:
         current_setting = f.readline().rstrip()
-    logger.info(current_setting + " " + str(interrupt_time))
+    try:
+        with open(temp_sensor) as f:
+            t=(f.read().split("t="))[1].rstrip()
+            t=(float(t)/1000)
+    except FileNotFoundError:
+        t=-99
+    logger.info(current_setting + " " + str(interrupt_time) + " " + str(t))
     time.sleep(60) # anything within 1 minute is chiming the same hour. Don't wait too long as there are occasional false triggers
     
 GPIO.cleanup()           # clean up GPIO on normal exit  
