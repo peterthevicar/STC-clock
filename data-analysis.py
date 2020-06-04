@@ -89,7 +89,7 @@ if args.full: # full analysis requested
     else:
         print("TREND - (Not fitting line to data points because half hours are included)")
     print("FINEA","{:.2f}".format(avg_fa),"(Average fine adjust setting)")
-    print("AVGTP","{:.2f}".format(avg_temp),"(Average temperature in clock case)")
+    print("AVGTC","{:.2f}".format(avg_temp),"(Average temperature in clock case)")
     print("  Maximum error:","{:.3f}".format(max_err),"= average error +","{:.3f}".format(max_err-avg_err))
     print("  Minimum error:","{:.3f}".format(min_err),"= average error -","{:.3f}".format(avg_err-min_err))
     print("  Spread of values (max-min):", "{:.3f}".format(max_err - min_err))
