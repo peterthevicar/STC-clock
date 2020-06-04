@@ -24,7 +24,7 @@ cd /home/pi/Desktop/STC-clock
 #~ WPI="1"
 #~ echo "Maximum fast = $FAE, Maximum slow = $SAE"
 function med_error {
-    dec_n="$(python3 data-analysis.py -d5 < $1 | grep ERROR | sed 's/ERROR \([0-9.-]*\).*/\1/')"
+    dec_n="$(python3 data-analysis.py -d5 < $1 | grep MEDER | sed 's/MEDER \([0-9.-]*\).*/\1/')"
     # multiply by 10 and round to get error in tenths of seconds
     awk '{printf "%.0f", $1*10}' <<< "$dec_n"
 }
