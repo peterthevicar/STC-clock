@@ -5,9 +5,10 @@ JQFILTER="
 .date, 
 \",TMax,\", .maxtempC, 
 \",TMin,\", .mintempC, 
-\",TAvg,\", ((.maxtempC | tonumber)+(.mintempC | tonumber))/2,
+\",TAvg,\", ([.hourly[].tempC | tonumber] | add/8),
 \",SunH,\", .sunHour,
-\",Humi,\", ([.hourly[].humidity | tonumber] | add/8),
+\",HAvg,\", ([.hourly[].humidity | tonumber] | add/8),
+\",PAvg,\", ([.hourly[].pressure | tonumber] | add/8),
 \"\n\""
 curl -s wttr.in/Lymington?format=j1 | 
   jq -j "$JQFILTER"

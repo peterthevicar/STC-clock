@@ -17,6 +17,7 @@ import sys # for stdin
 import datetime
 half_minute = datetime.timedelta(seconds=30)
 dt_nearest_min_prev = None
+prev_err = 0
 err_data=[]
 # Go through input a line at a time
 report_first=True
@@ -42,23 +43,31 @@ for inline in sys.stdin:
             report_first = False
         # ~ print("actual:", dt_actual, "nearest:", dt_nearest_min, "err:", err) # DEBUG
         cur_temp = float(s[3]) if len(s) >= 4 else -99
-        err_data.append([dt_secs, dt_nearest_min, err, fine_adjust, cur_temp])
+        err_data.append([dt_secs, dt_nearest_min, err, fine_adjust, cur_temp, err-prev_err])
         dt_nearest_min_prev = dt_nearest_min
+        prev_err = err
 # ~ print(err_data) # DEBUG
-# Calculate average, omitting top and bottom extreme values as outliers
+# Go through working out how far out of line each point is so we can identify outliers
+err_data[0][5] = -err_data[1][5]
+for i in range(1, len(err_data)-1):
+    err_data[i][5] = (err_data[i][5]-err_data[i+1][5])/2
+    
+# Calculate average, omitting the values most-different-from-neighbours-either-side as outliers
 outlier_percent=args.discard
-out_start = int(len(err_data)*outlier_percent/100)
-out_end = -out_start if out_start > 0 else None
+n_outliers = int(len(err_data)*outlier_percent/100)
+out_end = len(err_data)-n_outliers
 sum_fa = 0
 sum_err = 0; n_err = 0; max_err = -100; min_err = 100
 sum_dt = 0
 sum_temp = 0; n_temp = 0
-sorted_data=sorted(err_data, key=lambda err_data: err_data[2])[out_start:out_end]
+sorted_data=sorted(err_data, key=lambda err_data: abs(err_data[5]))[0:out_end]
+# ~ print (n_outliers, "outliers:", sorted(err_data, key=lambda err_data: abs(err_data[5]))[out_end:]) # DEBUG
+
 med_min, med_err = sorted_data[len(sorted_data)//2][1:3]
 print("MEDER", "{:.3f}".format(med_err), "(Median Error at",med_min,", positive means clock is slow)")
 # ~ print (sorted(sorted_data)) # DEBUG
 if args.full: # full analysis requested
-    for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp in sorted_data:
+    for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp, err_diff in sorted_data:
         sum_fa += fine_adjust
         if err > max_err: max_err=err
         if err < min_err: min_err=err
@@ -79,7 +88,7 @@ if args.full: # full analysis requested
     if not ACCEPT_HALF:
         # ~ print("avg_dt_secs:", avg_dt_secs)
         sum_xy = 0; sum_x_sq = 0
-        for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp in sorted_data:
+        for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp, err_diff in sorted_data:
             sum_xy += (dt_secs - avg_dt_secs)*(err - avg_err)
             sum_x_sq += (dt_secs - avg_dt_secs)**2
         slope = sum_xy/sum_x_sq
@@ -93,4 +102,4 @@ if args.full: # full analysis requested
     print("  Maximum error:","{:.3f}".format(max_err),"= average error +","{:.3f}".format(max_err-avg_err))
     print("  Minimum error:","{:.3f}".format(min_err),"= average error -","{:.3f}".format(avg_err-min_err))
     print("  Spread of values (max-min):", "{:.3f}".format(max_err - min_err))
-    print("  Data points (including outliers): "+str(len(err_data))+", Outliers "+"("+str(outlier_percent)+"% top and bottom) discarded:",out_start*2)
+    print("  Data points (including outliers): "+str(len(err_data))+", Outliers "+"("+str(outlier_percent)+"% most different from neighbours) discarded:",n_outliers)
