@@ -11,7 +11,7 @@ cd /home/pi/Desktop/STC-clock
 	tail -n2 Data/weather.log
 	echo ""
 	echo "Today's log analysis"
-	python3 data-analysis.py -f -d0 <Data/interrupts.log
+	python3 data-analysis.py -f -d10 <Data/interrupts.log
 	echo ""
 	echo "Today's raw data"
 	cat Data/interrupts.log
