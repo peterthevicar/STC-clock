@@ -63,8 +63,8 @@ sum_temp = 0; n_temp = 0
 sorted_data=sorted(err_data, key=lambda err_data: abs(err_data[5]))[0:out_end]
 # ~ print (n_outliers, "outliers:", sorted(err_data, key=lambda err_data: abs(err_data[5]))[out_end:]) # DEBUG
 
-med_min, med_err = sorted_data[len(sorted_data)//2][1:3]
-print("MEDER", "{:.3f}".format(med_err), "(Median Error at",med_min,", positive means clock is slow)")
+# ~ med_min, med_err = sorted_data[len(sorted_data)//2][1:3]
+# ~ print("MEDER", "{:.3f}".format(med_err), "(Median Error at",med_min,", positive means clock is slow)")
 # ~ print (sorted(sorted_data)) # DEBUG
 if args.full: # full analysis requested
     for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp, err_diff in sorted_data:
