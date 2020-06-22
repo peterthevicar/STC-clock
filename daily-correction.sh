@@ -23,33 +23,17 @@ cd /home/pi/Desktop/STC-clock
 #~ SAE="0"
 #~ WPI="1"
 #~ echo "Maximum fast = $FAE, Maximum slow = $SAE"
-function med_error {
-    dec_n="$(python3 data-analysis.py -d5 < $1 | grep ERROR | sed 's/ERROR \([0-9.-]*\).*/\1/')"
-    # multiply by 10 and round to get error in tenths of seconds
-    awk '{printf "%.0f", $1*10}' <<< "$dec_n"
-}
 function avg_error {
-    dec_n="$(python3 data-analysis.py -f -d5 < $1 | grep AVGER | sed 's/AVGER \([0-9.-]*\).*/\1/')"
+    dec_n="$(python3 data-analysis.py -f -d10 < $1 | grep AVGER | sed 's/AVGER \([0-9.-]*\).*/\1/')"
     # multiply by 10 and round to get error in tenths of seconds
     awk '{printf "%.0f", $1*10}' <<< "$dec_n"
 }
 function trend {
-    dec_n="$(python3 data-analysis.py -f -d5 < $1 | grep TREND | sed 's/TREND \([0-9.-]*\).*/\1/')"
+    dec_n="$(python3 data-analysis.py -f -d10 < $1 | grep TREND | sed 's/TREND \([0-9.-]*\).*/\1/')"
     # multiply by 10 and round to get error in tenths of seconds
     awk '{printf "%.0f", $1*10}' <<< "$dec_n"
 }
 LOGF="Data/interrupts.log"
-# Old way comparing with yesterday's error
-#Find error from yesterday - there's a strangeness in Python's log file naming that means the name is from 2 days ago
-#~ LOGF0="$LOGF.$(date -d "2 days ago" -Idate)"
-#~ ERRY=$(med_error $LOGF0)
-#~ #Error from today
-#~ ERRT=$(med_error $LOGF)
-#~ #ERRT="-1" # for debugging
-#~ DRIFT=$((ERRT - ERRY))
-#~ echo -n "ERROR=$ERRT, Yesterday ERROR=$ERRY, DRIFT=$DRIFT"
-#~ #echo -n "FAE=$FAE, SAE=$SAE, FADJ=$(cat Data/setting.txt), Adjust: "
-#~ ADJ=$(awk '{printf "%+.0f", -$1-$2}' <<< "$ERRT $DRIFT")
 
 # New way using just today's data (AVGER and TREND)
 # To correct we need the error at the end of the day (approx AVGER + TREND/2)
@@ -58,7 +42,7 @@ AVGER=$(avg_error $LOGF)
 TREND=$(trend $LOGF)
 echo -n "AVGER=$AVGER, TREND=$TREND"
 ADJ=$(awk '{printf "%+.0f", -$1 - 1.5*$2}' <<< "$AVGER $TREND")
-echo ", FADJ=$(cat Data/setting.txt), Adjust: $ADJ"
+echo ", FINEA=$(cat Data/setting.txt), Adjust: $ADJ"
 
 if [ "$ADJ" -ne "+0" ]; then
   echo $ADJ | python3 motor-control.py
