@@ -17,7 +17,7 @@ temp_sensor="/sys/bus/w1/devices/28-00181100004b/w1_slave"
 #
 import smbus2
 import bme280
-# Change bus and OD for the particular sensor config
+# Change bus and ID for the particular sensor config
 bme280_ID = 0x76
 bme280_bus = smbus2.SMBus(1)
 # Read the calibration and print to make sure it's working
@@ -80,6 +80,7 @@ while True:
             time.sleep(60) # anything within 1 minute is chiming the same hour. Don't wait too long as there are occasional false triggers
         else:
             print(info)
+            
     except:
         if USE_LOG:
             logger.error("Exception detected, continuing:", sys.exc_info()[0])
