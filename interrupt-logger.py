@@ -9,20 +9,15 @@ datadir="/home/pi/Desktop/STC-clock/Data/"
 logfile=datadir+"interrupts.log"
 setfile=datadir+"setting.txt"
 
-# Each temperature sensor has a different address so if you change the sensor change this
-temp_sensor="/sys/bus/w1/devices/28-00181100004b/w1_slave"
-
 #
 # Set up to read bme280 sensor
 #
 import smbus2
 import bme280
 # Change bus and ID for the particular sensor config
-bme280_ID = 0x76
 bme280_bus = smbus2.SMBus(1)
-# Read the calibration and print to make sure it's working
+bme280_ID = 0x76
 bme280_calibration = bme280.load_calibration_params(bme280_bus)
-print(bme280.sample(bme280_bus,bme280_ID,bme280_calibration))
 
 #
 # Set up rotating log file
