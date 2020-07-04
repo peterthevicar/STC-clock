@@ -42,18 +42,22 @@ if USING_GPIO:
 #
 while True:
     try:
+        # The release sensor is normally 0, goes slowly to 1 about 
+        # 5 mins before release then back to 0 quickly on release
+        # Likely to get at least one falling edge on the slow way up
         if USING_GPIO: GPIO.wait_for_edge(interrupt_pin, GPIO.FALLING)
         interrupt_time = datetime.datetime.now()
         
         # Construct the information line for the log
-        info = current_setting
+        info = interrupt_time
           
         # Log the data
         if USE_LOG:
             logger.info(info)
-            time.sleep(60) # anything within 1 minute is chiming the same hour. Don't wait too long as there are occasional false triggers
+            time.sleep(60) # anything within 1 minute is just bounce on the way up
         else:
             print(info)
+            time.sleep(1)
             
     except:
         if USE_LOG:
