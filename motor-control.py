@@ -62,9 +62,9 @@ def one_seq(direction):
 # Adjust SEQS_PER_TICK according to size of scale: 
 #   number of sequences of the motor needed to shift the weight by 
 #   one (minor) tick on the pendulum scale
-#   32 was slightly too big: 50 went from 10.4 to 5.3 => should be 31.4
+#   32 seems just right for current scale
 # Need to stick with a whole number
-SEQS_PER_TICK = 31
+SEQS_PER_TICK = 32
 
 try:
     # Read what we're trying to achieve from the input, format is <+|-><number of ticks>
