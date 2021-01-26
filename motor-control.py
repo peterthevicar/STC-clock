@@ -59,15 +59,15 @@ def one_seq(direction):
         time.sleep(0.01)
 
 # 360° rotation requires 128 times through the sequence (1024 individual steps)
-# Adjust SEQS_PER_TICK according to size of scale: 
+# Adjust SEQS_PER_TENTH according to size of scale: 
 #   number of sequences of the motor needed to shift the weight by 
-#   one (minor) tick on the pendulum scale
+#   one tenth of a major tick on the pendulum scale
 #   32 seems just right for current scale
 # Need to stick with a whole number
-SEQS_PER_TICK = 32
+SEQS_PER_TENTH = 32
 
 try:
-    # Read what we're trying to achieve from the input, format is <+|-><number of ticks>
+    # Read what we're trying to achieve from the input, format is <+|-><number of tenths>
     inline = sys.stdin.readline()
 
     # First the direction: positive increment turns the motor shaft clockwise.
@@ -78,23 +78,23 @@ try:
     elif inline[0] == "-":
         direction = -1
     else:
-        raise "Invalid input, should be <+|-><nticks>"
+        raise "Invalid input, should be <+|-><ntenths>"
 
-    # Rest of input line is the number of ticks to move; translate into seqs
-    nticks = int(inline[1:])
+    # Rest of input line is the number of tenths to move; translate into seqs
+    ntenths = int(inline[1:])
 
     # Boundary check, mustn't go outside 1.0 - 10.9
     with open(setfile, "r") as f:
         current_setting = float(f.read())
         if direction == -1:
-            nticks = min(nticks, int((current_setting - 1.0) * 10))
+            ntenths = min(ntenths, int((current_setting - 1.0) * 10))
         else:
-            nticks = min(nticks, int((10.9 - current_setting) * 10))
+            ntenths = min(ntenths, int((10.9 - current_setting) * 10))
     
-    # Do the move, keeping the settings file updated every tick
-    print("Moving "+str(nticks)+" ticks from "+str(current_setting))
-    for t in range (nticks):
-        for i in range(SEQS_PER_TICK):
+    # Do the move, keeping the settings file updated every tenth of a tick
+    print("Moving "+str(ntenths)+" tenths from "+str(current_setting))
+    for t in range (ntenths):
+        for i in range(SEQS_PER_TENTH):
             one_seq(direction)
         current_setting += direction * 0.1
         with open(setfile, "r+") as f:
