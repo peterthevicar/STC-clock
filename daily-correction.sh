@@ -24,7 +24,7 @@ TREND=$(trend $LOGF)
 
 # The scale on the fine adjust is only approximate, so we need a factor 
 #  which relates seconds/day to ticks on the scale
-SPDpT="1.7"
+SPDpT="1.5"
 
 echo -n "AVGER=$AVGER, TREND=$TREND, SPDpT=$SPDpT"
 
