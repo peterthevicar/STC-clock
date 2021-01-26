@@ -15,4 +15,7 @@ cd /home/pi/Desktop/STC-clock
 	echo ""
 	echo "Today's raw data"
 	cat Data/interrupts.log
+	echo ""
+	echo "Current NTP chronyc tracking information"
+	chronyc tracking
 } | msmtp --read-recipients
