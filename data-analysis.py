@@ -50,33 +50,26 @@ for inline in sys.stdin:
 """
 This part divides the data into two series, one for the chime-on-tick
 and the other for chime-on-tock.
-It does this by comparing the error for this datum with the previous point in the series,
+It does this by comparing the error for this datum with the previous point in each series,
 if there's a big change in the error then it assumes the datum belongs in the other series.
 Transients with a big error are discarded.
 """
+margin_of_error = 0.7 # Anything outside this margin is considered likely to be in the other series
 def calc_d(err_d, curr_e):
 	if len(curr_e) > 0: # have previous data to compare with
 		return(abs(err_d[2]-curr_e[-1][2]))
-	else: # first point in this series so no difference yet
-		return 0
+	else: # first point in this series so any point is on the margin
+		global margin_of_error
+		return margin_of_error
 series=[{'err_data':[],'avg_err':0}, {'err_data':[],'avg_err':0}]
-curr_s=0;
 for err_d in err_data:
-	# Compare this error with the previous one
-	d=calc_d(err_d, series[curr_s]['err_data'])
-	if d > 2.8: # something wrong, max should be about 2 seconds
-		# Spot the case where it's the first datum at issue (which would cause problems)
-		# and if so ignore BOTH data to be on the safe side
-		# ~ print("Too big",err_d[1])
-		if len(series[curr_s]['err_data']) == 1:
-			series[curr_s]['err_data'][:]=[]
-	else:
-		if d > 0.8: # difference too big, must be in the other series
-			# ~ print("Swap",err_d[1])
-			curr_s = 1-curr_s
-			d=calc_d(err_d, series[curr_s]['err_data'])
-		# Add to series
-		series[curr_s]['err_data'].append(err_d+[d])
+	# Compare this error with the previous one in each series
+	d0=calc_d(err_d, series[0]['err_data'])
+	d1=calc_d(err_d, series[1]['err_data'])
+	# put it into the series which matches closer
+	s,d = (0,d0) if d0<=d1 else (1,d1)
+	print("-",err_d[1],"Error:",err_d[2],"d0,d1:",(d0,d1),"Series:",s)
+	series[s]['err_data'].append(err_d+[d0 if s==0 else d1])
 	
 """
 This part goes through working out how far out of line each point is by
