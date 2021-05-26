@@ -99,6 +99,7 @@ for sn in 0,1:
 	for e in sed:
 		tot_err += e[2]
 	series[sn]['avg_err'] = tot_err/len(sed) if len(sed)>0 else 0
+	
 if args.full: print("Series 0:",len(series[0]['sorted_ed']), 
 						"points, avg_err:","{:.2f}".format(series[0]['avg_err']),
 					"  Series 1:",len(series[1]['sorted_ed']), 
