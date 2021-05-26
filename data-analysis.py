@@ -71,6 +71,11 @@ for err_d in err_data:
 	# discard if it's a rogue point outside the margin of error for both series
 	if min(d0,d1) > margin_of_error:
 		if args.full: print("   **DISCARDED")
+		# If the sereis has just one entry THAT may be the rogue, so clear just in case
+		for s in (0,1):
+			if len(series[s]['err_data'])==1:
+				if args.full: print("   **Series",s,"cleared")
+				series[s]['err_data']=[]
 	else: # OK, add to the selected series
 		series[s]['err_data'].append(err_d+[d0 if s==0 else d1])
 	
