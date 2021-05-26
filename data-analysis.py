@@ -68,7 +68,11 @@ for err_d in err_data:
 	# put it into the series which matches closer
 	s,d = (0,d0) if d0<=d1 else (1,d1)
 	if args.full: print("  ",err_d[1],"Error:","{:.2f}".format(err_d[2]),"d0:","{:.2f}".format(d0),"d1:","{:.2f}".format(d1),"Series:",s)
-	series[s]['err_data'].append(err_d+[d0 if s==0 else d1])
+	# discard if it's a rogue point outside the margin of error for both series
+	if min(d0,d1) > margin_of_error:
+		if args.full: print("   **DISCARDED")
+	else: # OK, add to the selected series
+		series[s]['err_data'].append(err_d+[d0 if s==0 else d1])
 	
 """
 This part goes through working out how far out of line each point is by
