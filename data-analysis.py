@@ -67,7 +67,7 @@ for err_d in err_data:
 	d1=calc_d(err_d, series[1]['err_data'])
 	# put it into the series which matches closer
 	s,d = (0,d0) if d0<=d1 else (1,d1)
-	if args.full: print("  ",err_d[1],"Error:","{:.2f}".format(err_d[2]),"d0:","{:.2f}".format(d0),"d1:","{:.2f}".format(d1),"Series:",s)
+	if args.full: print(f"  {err_d[1]} Error: {err_d[2]:5.2f} d0: {d0:.2f} d1: {d1:.2f} Series: {s}")
 	# discard if it's a rogue point outside the margin of error for both series
 	if min(d0,d1) > margin_of_error:
 		if args.full: print("   **DISCARDED")
@@ -100,11 +100,12 @@ for sn in 0,1:
 		tot_err += e[2]
 	series[sn]['avg_err'] = tot_err/len(sed) if len(sed)>0 else 0
 	
-if args.full: print("Series 0:",len(series[0]['sorted_ed']), 
-						"points, avg_err:","{:.2f}".format(series[0]['avg_err']),
-					"  Series 1:",len(series[1]['sorted_ed']), 
-						"points, avg_err:","{:.2f}".format(series[1]['avg_err']),
-					"  Diff:","{:.2f}".format(abs(series[0]['avg_err']-series[1]['avg_err'])))
+if args.full: print(f"Series 0, {len(series[0]['sorted_ed'])} points, "
+						f"avg_err: {series[0]['avg_err']:.2f}; "
+					f"Series 1, {len(series[1]['sorted_ed'])} points, "
+						f"avg_err: {series[1]['avg_err']:.2f}; "
+					f"Diff: {abs(series[0]['avg_err']-series[1]['avg_err']):.2f}"
+					)
 """
 Now we have the two series, we have to choose the one with the most data
 to work out the trend, plus whether it's the fast or the slow series.
@@ -126,7 +127,7 @@ else:
 	midway = 0.5 * (series[0]['avg_err']-series[1]['avg_err'])
 	# if using s0 the midway sign will be inverted, if using s1 it will be OK
 	sn, adjust = (0, -midway) if len(series[0]['sorted_ed']) > len(series[1]['sorted_ed']) else (1, midway)
-if args.full: print("Using series", sn, "with", len(series[sn]['sorted_ed']), "data points and adjust set to", "{:.2f}".format(adjust))
+if args.full: print(f"Using series {sn} with {len(series[sn]['sorted_ed'])} data points and adjust set to {adjust:.2f}")
 
 """
 Now do the hard work of calculating the trend etc
@@ -148,7 +149,7 @@ for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp, err_diff in sorted_data
 	n_err += 1
 	# ~ print(dt_secs, err)
 avg_err = sum_err / n_err
-print("AVGER", "{:.3f}".format(avg_err+adjust), "(Average Error, positive means clock is slow.","{:.2f}".format(abs(adjust)), "subtracted" if adjust<0 else "added", "for tick/tock compensation)")
+print(f"AVGER {avg_err+adjust:.3f} (Average Error, positive means clock is slow. {abs(adjust):.2f} {'subtracted' if adjust<0 else 'added'} for tick/tock compensation)")
 # Now we know the average we can calculate the least-square slope
 avg_fa = sum_fa / n_err
 avg_dt_secs = sum_dt / n_err
@@ -161,10 +162,10 @@ for dt_secs, dt_nearest_min, err, fine_adjust, cur_temp, err_diff in sorted_data
 slope = sum_xy/sum_x_sq
 # convert from seconds per second to seconds per day
 slope = slope*60*60*24
-print("TREND", "{:.3f}".format(slope), "(Least squares trend, seconds/day, positive means clock getting slower)")
-print("FINEA","{:.2f}".format(avg_fa),"(Average fine adjust setting)")
-print("AVGTC","{:.2f}".format(avg_temp),"(Average temperature in clock case)")
-print("  Maximum error:","{:.3f}".format(max_err),"= average error +","{:.3f}".format(max_err-avg_err))
-print("  Minimum error:","{:.3f}".format(min_err),"= average error -","{:.3f}".format(avg_err-min_err))
-print("  Spread of values (max-min):", "{:.3f}".format(max_err - min_err))
-print("  Data points in series (including outliers): "+str(len(series[sn]['err_data']))+", Outliers "+"("+str(outlier_percent)+"% most different from neighbours) discarded:",str(len(series[sn]['err_data'])-len(series[sn]['sorted_ed'])))
+print(f"TREND {slope:.3f} (Least squares trend, seconds/day, positive means clock getting slower)")
+print(f"FINEA {avg_fa:.2f} (Average fine adjust setting)")
+print(f"AVGTC {avg_temp:.2f} (Average temperature in clock case)")
+print(f"  Maximum error: {max_err:.3f} = average error + {(max_err-avg_err):.3f}")
+print(f"  Minimum error: {min_err:.3f} = average error - {(avg_err-min_err):.3f}")
+print(f"  Spread of values (max-min): {(max_err - min_err):.3f}")
+print(f"  Data points in series (including outliers): {len(series[sn]['err_data'])}, Outliers ({outlier_percent}% most different from neighbours) discarded: {len(series[sn]['err_data'])-len(series[sn]['sorted_ed'])}")
