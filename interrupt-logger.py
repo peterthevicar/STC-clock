@@ -72,7 +72,7 @@ while True:
         # Log the data
         if USE_LOG:
             logger.info(info)
-            time.sleep(60) # anything within 1 minute is chiming the same hour. Don't wait too long as there are occasional false triggers
+            time.sleep(30) # anything within 30s may be chiming the same hour. Don't wait too long as there are occasional false triggers
         else:
             print(info)
             
