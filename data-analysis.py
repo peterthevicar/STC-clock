@@ -71,7 +71,7 @@ for err_d in err_data:
 	# discard if it's a rogue point outside the margin of error for both series
 	if min(d0,d1) > margin_of_error:
 		if args.full: print("   **DISCARDED")
-		# If the sereis has just one entry THAT may be the rogue, so clear just in case
+		# If the series has just one entry THAT may be the rogue, so clear just in case
 		for s in (0,1):
 			if len(series[s]['err_data'])==1:
 				if args.full: print("   **Series",s,"cleared")
@@ -120,11 +120,13 @@ so if we're using the slow series (more positive) adjust needs to be -ve,
 for the fast series (more negative) +ve, and for a single series 0
 
 """
-if len(series[1]['err_data'])<=2: # Almost all in a single series
+if len(series[1]['err_data'])<=1: # Only one data point in the second series which may be a mistake
 	sn=0; adjust=0
 else:
 	# midway between 2 series. -ve if s0 is the fast series
 	midway = 0.5 * (series[0]['avg_err']-series[1]['avg_err'])
+	# shouldn't be more than 2 seconds between the series
+	midway = -2 if midway < -2 else 2 if midway > 2 else midway
 	# if using s0 the midway sign will be inverted, if using s1 it will be OK
 	sn, adjust = (0, -midway) if len(series[0]['sorted_ed']) > len(series[1]['sorted_ed']) else (1, midway)
 if args.full: print(f"Using series {sn} with {len(series[sn]['sorted_ed'])} data points and adjust set to {adjust:.2f}")
