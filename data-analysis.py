@@ -125,8 +125,8 @@ if len(series[1]['err_data'])<=1: # Only one data point in the second series whi
 else:
 	# midway between 2 series. -ve if s0 is the fast series
 	midway = 0.5 * (series[0]['avg_err']-series[1]['avg_err'])
-	# shouldn't be more than 2 seconds between the series
-	midway = -2 if midway < -2 else 2 if midway > 2 else midway
+	# shouldn't be more than 2 seconds between the series, so midway <= 1 second
+	midway = -1 if midway < -1 else 1 if midway > 1 else midway
 	# if using s0 the midway sign will be inverted, if using s1 it will be OK
 	sn, adjust = (0, -midway) if len(series[0]['sorted_ed']) > len(series[1]['sorted_ed']) else (1, midway)
 if args.full: print(f"Using series {sn} with {len(series[sn]['sorted_ed'])} data points and adjust set to {adjust:.2f}")
