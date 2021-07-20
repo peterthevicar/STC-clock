@@ -61,6 +61,7 @@ def calc_d(err_d, curr_e):
 		global margin_of_error
 		return margin_of_error
 series=[{'err_data':[],'avg_err':0}, {'err_data':[],'avg_err':0}]
+discards_left=3
 for err_d in err_data:
 	# Compare this error with the previous one in each series
 	d0=calc_d(err_d, series[0]['err_data'])
@@ -71,6 +72,19 @@ for err_d in err_data:
 	# discard if it's a rogue point outside the margin of error for both series
 	if min(d0,d1) > margin_of_error:
 		if args.full: print("   **DISCARDED")
+		discards_left -= 1
+		if discards_left <= 0:
+			"""
+			Too many discards, usually because the clock is gaining or losing very rapidly.
+			Put ALL the points into series 0 as the two-series algorithm only
+			works when the clock is correcting slowly
+			"""
+			if args.full: print("   **TOO MANY DISCARDED, all points placed in series 0")
+			series=[{'err_data':[],'avg_err':0}, {'err_data':[],'avg_err':0}]
+			for err_d in err_data:
+				d0=calc_d(err_d, series[0]['err_data'])
+				series[0]['err_data'].append(err_d+[d0])
+			break
 		# If the series has just one entry THAT may be the rogue, so clear just in case
 		for s in (0,1):
 			if len(series[s]['err_data'])==1:
