@@ -1,5 +1,6 @@
 #!/bin/bash
 # Send email with summary of clock stats
+# Sending email account details and auth are in ~/.msmtprc
 cd /home/pi/Desktop/STC-clock
 {
 	echo "To: linuxiseasier@gmail.com, nigel.sethsmith@gmail.com"
